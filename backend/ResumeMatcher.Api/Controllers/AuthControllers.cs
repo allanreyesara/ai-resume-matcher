@@ -4,6 +4,9 @@ using ResumeMatcher.Api.Contracts.Auth;
 using ResumeMatcher.Api.Infrastructure.Data;
 using ResumeMatcher.Api.Infrastructure.Data.Auth;
 using ResumeMatcher.Api.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ResumeMatcher.Api.Controllers;
 
@@ -24,6 +27,8 @@ public class AuthController : ControllerBase
         _passwordService = passwordService;
         _jwtService = jwtService;
     }
+
+    //Register new user
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
@@ -62,10 +67,75 @@ public class AuthController : ControllerBase
 
         return Ok(new { email, fullName, token });
     }
+
+
+    //Login existing user
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    {
+        var email = (request.Email ?? "").Trim().ToLowerInvariant();
+        var password = request.Password ?? "";
+
+        if (string.IsNullOrWhiteSpace(email) ||
+            string.IsNullOrWhiteSpace(password))
+        {
+            return BadRequest("Email and password are required.");
+        }
+
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if (user == null || !_passwordService.VerifyPassword(user, password, user.PasswordHash))
+        {
+            return Unauthorized("Invalid email or password.");
+        }
+
+        var token = _jwtService.CreateToken(user);
+        return Ok(new { email = user.Email, fullName = user.FullName, token });
+        
+    }
+
+
+    //Get current user info
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> Me()
+    {
+    Guid userId;
+
+    try
+    {
+        userId = User.GetUserId();
+    }
+    catch (UnauthorizedAccessException ex)
+    {
+        return Unauthorized(ex.Message);
+    }
+
+    var user = await _db.Users
+        .AsNoTracking()
+        .FirstOrDefaultAsync(u => u.Id == userId);
+
+    if (user == null)
+        return Unauthorized("User not found.");
+
+
+    return Ok(new
+    {
+        user.Id,
+        user.Email,
+        user.FullName,
+        user.CreatedAt
+    });
 }
 
+    //Logout user (for JWT, this is typically handled on the client side)
 
+    [Authorize]
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        // JWT is stateless: logout is handled client-side
+        // Client must delete the token
 
-
-
-
+        return NoContent(); // 204
+    }
+}
