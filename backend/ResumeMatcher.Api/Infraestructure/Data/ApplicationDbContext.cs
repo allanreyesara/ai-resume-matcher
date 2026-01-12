@@ -10,6 +10,7 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<User> Users { get; set; } = default!;
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,6 +28,29 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.CreatedAt).IsRequired();
             entity.Property(e => e.FullName).HasMaxLength(255).IsRequired();
             entity.Property(e => e.IsActive).HasDefaultValue(true).IsRequired();
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.ToTable("RefreshTokens");
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.HashedToken).HasMaxLength(200).IsRequired();
+            entity.HasIndex(e => e.HashedToken).IsUnique();
+
+            entity.Property(e => e.ExpiresAtUtc).IsRequired();
+            entity.Property(e => e.CreatedAtUtc).IsRequired();
+            entity.Property(e => e.UserId).IsRequired();
+            entity.HasIndex(e => e.UserId);  
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.RefreshTokens)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+                  
+            entity.Property(e => e.CreatedByIp).HasMaxLength(200);
+            entity.Property(e => e.UserAgent).HasMaxLength(500);
+            
         });
     }
 }

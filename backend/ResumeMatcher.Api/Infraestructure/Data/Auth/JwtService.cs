@@ -30,7 +30,7 @@ public class JwtService : IJwtService
         _options = options.Value;
     }
 
-    public int ExpirationSeconds => _options.ExpirationMinutes * 60;
+    public int ExpirationSeconds => _options.ExpirationMinutes * 15;
 
     public string CreateToken(User user)
     {
@@ -41,7 +41,8 @@ public class JwtService : IJwtService
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
         };
 
         

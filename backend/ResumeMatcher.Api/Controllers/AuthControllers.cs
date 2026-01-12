@@ -10,6 +10,8 @@ using System.IdentityModel.Tokens.Jwt;
 
 namespace ResumeMatcher.Api.Controllers;
 
+
+
 [ApiController]
 [Route("auth")]
 public class AuthController : ControllerBase
@@ -17,18 +19,49 @@ public class AuthController : ControllerBase
     private readonly ApplicationDbContext _db;
     private readonly IPasswordService _passwordService;
     private readonly IJwtService _jwtService;
+    private readonly IRefreshTokenService _refresh;
 
     public AuthController(
         ApplicationDbContext db,
         IPasswordService passwordService,
-        IJwtService jwtService)
+        IJwtService jwtService,
+        IRefreshTokenService refresh)
     {
         _db = db;
         _passwordService = passwordService;
         _jwtService = jwtService;
+        _refresh = refresh;
+    }
+
+    private const string RefreshCookieName = "refresh_token";
+
+    private void SetRefreshCookie(string refreshToken)
+    {
+        Response.Cookies.Append(RefreshCookieName, refreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTimeOffset.UtcNow.AddDays(14)
+            Path = "/auth/refresh"
+        });
+    }
+
+    private void ClearRefreshCookie()
+    {
+        Response.Cookies.Delete(RefreshCookieName, new CookieOptions
+        {
+            Path = "/auth/refresh"
+        });
+    }
+
+    private string? GetRefreshCookie()
+    {
+        return Request.Cookies.TryGetValue(RefreshCookieName, out var token) ? token : null;
     }
 
     //Register new user
+
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
@@ -58,6 +91,7 @@ public class AuthController : ControllerBase
             IsActive = true 
         };
 
+
         user.PasswordHash = _passwordService.HashPassword(user, password);
 
         _db.Users.Add(user);
@@ -71,7 +105,7 @@ public class AuthController : ControllerBase
 
     //Login existing user
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
         var email = (request.Email ?? "").Trim().ToLowerInvariant();
         var password = request.Password ?? "";
@@ -88,9 +122,56 @@ public class AuthController : ControllerBase
             return Unauthorized("Invalid email or password.");
         }
 
-        var token = _jwtService.CreateToken(user);
-        return Ok(new { email = user.Email, fullName = user.FullName, token });
+        var accessToken = _jwtService.CreateToken(user);
+        var refreshToken = await _refresh.IssueAsync(
+            userId: user.Id,
+            userAgent: GetUserAgent(),
+            ip: GetIp(),
+            ct: cancellationToken); 
+        SetRefreshCookie(refreshToken.RefreshTokenPlain);
+
+        return Ok(new TokenResponse
+        {
+            AccessToken = accessToken,
+            ExpiresIn = _jwtService.ExpirationSeconds,
+            Email = user.Email,
+            FullName = user.FullName
+        });
         
+    }
+
+    //Refresh access token
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh([FromBody] RefreshRequest req, CancellationToken cancellationToken)
+    {
+        var (isValid, userId, error) = await _refresh.ValidateAsync(req.RefreshToken, cancellationToken);
+        if (!isValid)
+        {
+            return Unauthorized(error);
+        }
+
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+        if (user == null)
+        {
+            return Unauthorized("User not found.");
+        }
+
+        var (rotValid, newRefreshPlain, rotEror) = await _refresh.RotateAsync(req.RefreshToken, GetIp(), GetUserAgent(), cancellationToken);
+        if (!rotValid)
+        {
+            return Unauthorized(rotEror);
+        }
+
+        var accessToken = _jwtService.CreateToken(user);
+        SetRefreshCookie(newRefreshPlain);
+
+        return Ok(new TokenResponse
+        {
+            AccessToken = accessToken,
+            ExpiresIn = _jwtService.ExpirationSeconds,
+            Email = user.Email,
+            FullName = user.FullName
+        });
     }
 
 
@@ -127,15 +208,17 @@ public class AuthController : ControllerBase
     });
 }
 
-    //Logout user (for JWT, this is typically handled on the client side)
-
+    //Logout user 
     [Authorize]
     [HttpPost("logout")]
-    public IActionResult Logout()
+    public async Task<IActionResult> Logout([FromBody] RefreshRequest req, CancellationToken ct)
     {
-        // JWT is stateless: logout is handled client-side
-        // Client must delete the token
-
-        return NoContent(); // 204
+        var refreshToken = GetRefreshCookie();
+       if (!string.IsNullOrWhiteSpace(refreshToken)) await _refresh.RevokeAsync(refreshToken, ct);
+       ClearRefreshCookie();
+        return NoContent();
     }
+
+    private string? GetUserAgent() => Request.Headers.UserAgent.ToString();
+    private string? GetIp() => HttpContext.Connection.RemoteIpAddress?.ToString();
 }

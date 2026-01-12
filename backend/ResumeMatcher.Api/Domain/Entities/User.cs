@@ -9,5 +9,7 @@ public class User
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string FullName { get; set; } = default!;
     public bool IsActive { get; set; } = true;
+
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     
 }
