@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+AI Resume Matcher – Frontend
 
-## Getting Started
+Frontend web application for AI Resume Matcher, a platform that uses artificial intelligence to analyze resumes and match candidates with relevant job opportunities based on skills, experience, and relevance.
 
-First, run the development server:
+Built with Next.js (App Router) and Tailwind CSS, focused on performance, clean UI, and scalability.
 
-```bash
+Features
+
+Modern landing page with clear value proposition
+
+AI-focused user experience for resume analysis and job matching
+
+Fully responsive design
+
+Design system based on CSS variables
+
+Clean, component-based architecture
+
+Ready for authentication and backend integration
+
+Tech Stack
+
+Framework: Next.js (App Router)
+
+Language: TypeScript
+
+Styling: Tailwind CSS
+
+Design Tokens: CSS Variables (globals.css)
+
+Icons: Inline SVG
+
+Assets: Static images from public/
+
+Project Structure
+
+frontend/
+└── resume-matcher-web/
+    ├── app/
+    │   ├── (public)/        # Public routes (landing page)
+    │   │   ├── page.tsx
+    │   │   └── layout.tsx
+    │   ├── (auth)/          # Auth-related routes (planned)
+    │   ├── layout.tsx       # Root layout (html / body)
+    │   └── globals.css      # Global styles and CSS variables
+    ├── public/
+    │   ├── HeroLanding.png
+    │   └── *.svg
+    ├── package.json
+    ├── tailwind.config.js
+    └── tsconfig.json
+
+Design System
+
+The UI uses CSS variables to keep a consistent and easily maintainable theme:
+
+:root {
+  --background: #f4f1e9;
+  --foreground: #111827;
+  --surface: #ffffff;
+  --muted: #5b82c4;
+}
+
+These tokens are consumed directly in Tailwind classes:
+bg-[var(--background)]
+text-[var(--foreground)]
+border-[var(--muted)]
+
+Getting Started
+Install dependencies
+
+npm install
+
+Run the development server
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open in browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+Current Pages
 
-To learn more about Next.js, take a look at the following resources:
+Landing Page
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Hero section with AI illustration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Primary CTAs (Upload Resume / Access Account)
 
-## Deploy on Vercel
+Feature highlights:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Instant Analysis
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Key Skills Comparison
+
+Job Fit Suggestions
+
+Backend Integration (Planned)
+
+The frontend is designed to integrate with the AI Resume Matcher API, built with:
+
+.NET 8
+
+JWT Authentication
+
+Resume parsing and AI matching
+
+Secure REST endpoints
+
+Roadmap
+
+Authentication (Login / Register)
+
+Resume upload flow
+
+AI match score visualization
+
+Job recommendations dashboard
+
+User profile and history
+
+Dark mode support
+
+Notes
+
+This project prioritizes clean UI architecture, modern React patterns, and practical Tailwind usage over visual complexity or unnecessary abstractions.
+
+License
+
+MIT License
