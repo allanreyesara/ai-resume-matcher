@@ -42,7 +42,7 @@ public class AuthController : ControllerBase
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.Strict,
-            Expires = DateTimeOffset.UtcNow.AddDays(14)
+            Expires = DateTimeOffset.UtcNow.AddDays(14),
             Path = "/auth/refresh"
         });
     }
