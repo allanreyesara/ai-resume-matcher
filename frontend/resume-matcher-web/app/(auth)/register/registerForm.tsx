@@ -24,7 +24,25 @@ export default function RegisterForm() {
         }
 
         try{
-            // API call
+            const res = await fetch("http://localhost:5162/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({ fullName, email, password }),
+            });
+            if (!res.ok) {
+                if (res.status === 400) {
+                    throw new Error("Invalid registration data");
+                }
+                throw new Error("Registration failed");
+            }
+
+            const data = await res.json();
+
+            window.location.href = "/login";
+
             console.log({fullName, email, password});
         } catch (err) {
             setError("Registration failed. Please try again.");

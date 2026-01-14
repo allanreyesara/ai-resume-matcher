@@ -40,10 +40,10 @@ public class AuthController : ControllerBase
         Response.Cookies.Append(RefreshCookieName, refreshToken, new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
+            Secure = false,
+            SameSite = SameSiteMode.Lax,
             Expires = DateTimeOffset.UtcNow.AddDays(14),
-            Path = "/auth/refresh"
+            Path = "/"
         });
     }
 
@@ -128,7 +128,10 @@ public class AuthController : ControllerBase
             userAgent: GetUserAgent(),
             ip: GetIp(),
             ct: cancellationToken); 
+        
         SetRefreshCookie(refreshToken.RefreshTokenPlain);
+
+        Response.Headers.Append("Set-Cookie", "testcookie=12345; Path=/; HttpOnly");
 
         return Ok(new TokenResponse
         {
@@ -211,11 +214,11 @@ public class AuthController : ControllerBase
     //Logout user 
     [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout([FromBody] RefreshRequest req, CancellationToken ct)
+    public async Task<IActionResult> Logout(CancellationToken ct)
     {
         var refreshToken = GetRefreshCookie();
-       if (!string.IsNullOrWhiteSpace(refreshToken)) await _refresh.RevokeAsync(refreshToken, ct);
-       ClearRefreshCookie();
+        if (!string.IsNullOrWhiteSpace(refreshToken)) await _refresh.RevokeAsync(refreshToken, ct);
+        ClearRefreshCookie();
         return NoContent();
     }
 

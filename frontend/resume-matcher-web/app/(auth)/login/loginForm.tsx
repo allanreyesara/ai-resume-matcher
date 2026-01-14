@@ -16,7 +16,7 @@ export default function LoginForm() {
         const password = formData.get("password") as string;
 
         try {
-            const res = await fetch("http://localhost:5162/auth/login", {
+            const res = await fetch("/api/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -37,7 +37,6 @@ export default function LoginForm() {
             const accessToken = data.accessToken;
             sessionStorage.setItem("accessToken", accessToken);
 
-            // Redirect to dashboard or home page after successful login
             window.location.href = "/";
             console.log({email, password});
         } catch (err) {
