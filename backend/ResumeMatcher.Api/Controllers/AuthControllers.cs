@@ -53,6 +53,11 @@ public class AuthController : ControllerBase
         {
             Path = "/auth/refresh"
         });
+
+         Response.Cookies.Delete(RefreshCookieName, new CookieOptions
+        {
+            Path = "/"
+        });
     }
 
     private string? GetRefreshCookie()
@@ -130,8 +135,6 @@ public class AuthController : ControllerBase
             ct: cancellationToken); 
         
         SetRefreshCookie(refreshToken.RefreshTokenPlain);
-
-        Response.Headers.Append("Set-Cookie", "testcookie=12345; Path=/; HttpOnly");
 
         return Ok(new TokenResponse
         {

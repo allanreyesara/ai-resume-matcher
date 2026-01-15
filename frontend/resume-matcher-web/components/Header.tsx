@@ -36,7 +36,7 @@ export default function Header() {
                 <li><a href="/" className="block py-2 px-3 hover:opacity-80">About</a></li>
                 <li><a href="/" className="block py-2 px-3 hover:opacity-80">Services</a></li>
                 <li><a href="/" className="block py-2 px-3 hover:opacity-80">Contact</a></li>
-                <li><a href="/login" className="block py-2 px-3 hover:opacity-80">Profile</a></li>
+                <li><a href="/me" className="block py-2 px-3 hover:opacity-80">Profile</a></li>
                 {isLoggedIn ? <LogOutButton /> : <li><a href="/login" className="block py-2 px-3 hover:opacity-80">Login</a></li>}
               </ul>
             </div>
