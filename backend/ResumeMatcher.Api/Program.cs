@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ResumeMatcher.Api.Infrastructure.Data;
+using ResumeMatcher.Api.Infrastructure.Storage;
 using ResumeMatcher.Api.Infrastructure.Data.Auth;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -49,6 +50,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 
+builder.Services.Configure<SupabaseOptions>(builder.Configuration.GetSection("Supabase"));
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.Configure<RefreshTokenOptions>(builder.Configuration.GetSection("RefreshToken"));
 builder.Services.AddScoped<IJwtService, JwtService>();
@@ -74,6 +76,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddHttpClient<IStorageService, SupabaseStorageService>();
 builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>

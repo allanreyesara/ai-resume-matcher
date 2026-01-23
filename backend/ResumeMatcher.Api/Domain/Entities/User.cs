@@ -10,6 +10,8 @@ public class User
     public string FullName { get; set; } = default!;
     public bool IsActive { get; set; } = true;
 
+
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    public ICollection<Document> Documents { get; set; } = new List<Document>();
     
 }

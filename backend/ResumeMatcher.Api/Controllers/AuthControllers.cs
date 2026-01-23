@@ -5,12 +5,8 @@ using ResumeMatcher.Api.Infrastructure.Data;
 using ResumeMatcher.Api.Infrastructure.Data.Auth;
 using ResumeMatcher.Api.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace ResumeMatcher.Api.Controllers;
-
-
 
 [ApiController]
 [Route("auth")]
