@@ -6,9 +6,10 @@ public class Document
 {
     public enum DocumentStatus
     {
-        Active,
-        Inactive,
-        Deleted
+        PendingUpload = 0,
+        Active = 1,
+        Inactive = 2,
+        Deleted = 3
     }
 
     public enum DocumentKind
@@ -24,7 +25,7 @@ public class Document
     public string FileName { get; set; } = default!;
     public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
 
-    public DocumentStatus Status { get; set; } = DocumentStatus.Active;
+    public DocumentStatus Status { get; set; } = DocumentStatus.PendingUpload;
     public DocumentKind Kind { get; set; } = DocumentKind.Resume;
 
     public string OriginalFileName { get; set; } = default!;
@@ -36,6 +37,6 @@ public class Document
 
     public bool IsDefault { get; set; } = false;
 
-
+    public long? SizeBytes { get; set; }
     
 }

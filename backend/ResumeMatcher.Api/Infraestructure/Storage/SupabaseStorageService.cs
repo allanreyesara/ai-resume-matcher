@@ -16,7 +16,8 @@ public class SupabaseStorageService : IStorageService
 
     public async Task<string> CreateSignedUploadUrlAsync(string bucket, string path, int expiresInSeconds = 120)
     {
-        var url = $"{_options.Url}/storage/v1/object/sign/{bucket}/{path}";
+        var safePath = Uri.EscapeDataString(path);
+        var url = $"{_options.Url.TrimEnd('/')}/storage/v1/object/upload/sign/{bucket}/{safePath}";
 
         using var req = new HttpRequestMessage(HttpMethod.Post, url);
         req.Headers.Add("Authorization", $"Bearer {_options.ServiceRoleKey}");
@@ -32,10 +33,17 @@ public class SupabaseStorageService : IStorageService
         }
         using var json = JsonDocument.Parse(body);
 
-        var signedUrl = json.RootElement.GetProperty("signedURL").GetString() ?? throw new InvalidOperationException("Supabase response missing 'signedURL'.");
+        string? signedUrl =
+        json.RootElement.TryGetProperty("signedURL", out var p1) ? p1.GetString() :
+        json.RootElement.TryGetProperty("signedUrl", out var p2) ? p2.GetString() :
+        json.RootElement.TryGetProperty("url", out var p3) ? p3.GetString() :
+        null;
 
-        return signedUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
-            ? signedUrl
-            : $"{_options.Url}{signedUrl}";
-    }
+        if (string.IsNullOrWhiteSpace(signedUrl))
+            throw new InvalidOperationException($"Supabase response missing signed url. Body: {body}");
+
+                return signedUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                    ? signedUrl
+                    : $"{_options.Url.TrimEnd('/')}{signedUrl}";
+            }
 }
