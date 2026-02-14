@@ -29,12 +29,11 @@ export default function ProfileCard({ me }: { me: { id: string; email: string; f
                         </div>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <button className="flex-1 py-4 rounded-xl text-lg font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition shadow">
-                        Upload resume
-                        </button>
-
+                        <a href="/documents/upload" className="flex-1 py-4 rounded-xl text-lg font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition shadow flex items-center justify-center text-center">
+                            Upload Resume
+                        </a>
                         <button className="flex-1 py-4 rounded-xl text-lg font-semibold border border-default hover:bg-[var(--muted)]/10 transition">
-                        View matches
+                            View matches
                         </button>
                     </div>
                 </div>
