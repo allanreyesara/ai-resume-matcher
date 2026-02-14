@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import LogOutButton from "@/app/(auth)/logout/logOutButton";
 
 export default function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         const token = sessionStorage.getItem("accessToken");
@@ -35,9 +37,33 @@ export default function Header() {
                 <li><a href="/" className="block py-2 px-3 hover:opacity-80">Home</a></li>
                 <li><a href="/" className="block py-2 px-3 hover:opacity-80">About</a></li>
                 <li><a href="/" className="block py-2 px-3 hover:opacity-80">Services</a></li>
-                <li><a href="/" className="block py-2 px-3 hover:opacity-80">Contact</a></li>
-                <li><a href="/me" className="block py-2 px-3 hover:opacity-80">Profile</a></li>
-                {isLoggedIn ? <LogOutButton /> : <li><a href="/login" className="block py-2 px-3 hover:opacity-80">Login</a></li>}
+                <li className="relative">
+                  {isLoggedIn ? (
+                    <>
+                      <button onClick={() => setOpen(!open)} className="cursor-pointer flex items-center gap-1 py-2 px-3 hover:opacity-80">
+                        <span>Profile</span>
+                        <ChevronDown size={16} className={`transition-transform ${open ? "rotate-180" : ""}`}/>
+                      </button>
+
+                      {open && (
+                        <div className="absolute right-0 mt-2 w-44 rounded-md shadow-lh border border-default bg-[var(--surface)]">
+                          <a href="/me" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-400">
+                            My Profile
+                          </a>
+                          <a href="/documents/upload" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-400">
+                            Upload Resume
+                          </a>
+                          <div className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-400" onClick={() => setOpen(false)}>
+                            <LogOutButton />
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ): (<a href="/login" className="block py-2 px-3 hover:opacity-40">
+                    Login
+                    </a>
+                  )}
+                </li>
               </ul>
             </div>
           </div>

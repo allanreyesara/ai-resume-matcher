@@ -16,8 +16,8 @@ public class SupabaseStorageService : IStorageService
 
     public async Task<string> CreateSignedUploadUrlAsync(string bucket, string path, int expiresInSeconds = 120)
     {
-        var safePath = Uri.EscapeDataString(path);
-        var url = $"{_options.Url.TrimEnd('/')}/storage/v1/object/upload/sign/{bucket}/{safePath}";
+        var safePath = string.Join('/', path.Split('/').Select(Uri.EscapeDataString));
+        var url = $"{_options.Url}/storage/v1/object/upload/sign/{bucket}/{safePath}";
 
         using var req = new HttpRequestMessage(HttpMethod.Post, url);
         req.Headers.Add("Authorization", $"Bearer {_options.ServiceRoleKey}");
@@ -42,8 +42,19 @@ public class SupabaseStorageService : IStorageService
         if (string.IsNullOrWhiteSpace(signedUrl))
             throw new InvalidOperationException($"Supabase response missing signed url. Body: {body}");
 
-                return signedUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
-                    ? signedUrl
-                    : $"{_options.Url.TrimEnd('/')}{signedUrl}";
-            }
+                var baseUrl = _options.Url.TrimEnd('/');
+
+            if (signedUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                return signedUrl;
+
+            signedUrl = signedUrl.StartsWith("/") ? signedUrl : "/" + signedUrl;
+
+            if (signedUrl.StartsWith("/object/", StringComparison.OrdinalIgnoreCase))
+                return $"{baseUrl}/storage/v1{signedUrl}";
+
+            if (signedUrl.StartsWith("/storage/v1/", StringComparison.OrdinalIgnoreCase))
+                return $"{baseUrl}{signedUrl}";
+
+            return $"{baseUrl}{signedUrl}";
+        }
 }

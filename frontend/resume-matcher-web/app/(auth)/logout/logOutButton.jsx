@@ -32,6 +32,7 @@ export default function LogOutButton() {
     }
 
     return (
-        <li><button type="button" onClick={logout} disabled={loading} className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg border border-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--muted)]/15 focus:outline-none focus:ring-4 focus:ring-[var(--muted)]/30 transition">Log Out</button></li>
+        <button className="cursor-pointer"type="button" onClick={logout} disabled={loading}>Log Out</button>
+        
     );
 }

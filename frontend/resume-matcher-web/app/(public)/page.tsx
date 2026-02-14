@@ -21,7 +21,7 @@ export default function HomePage() {
             {/* CTA */}
             <div className="flex flex-wrap items-center gap-4">
               {/* Primary */}
-              <a href="#" className="inline-flex items-center justify-center px-6 py-3 text-base font-semibold rounded-lg bg-[var(--muted)] text-white hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--muted)]/40 transition">
+              <a href="/documents/upload" className="inline-flex items-center justify-center px-6 py-3 text-base font-semibold rounded-lg bg-[var(--muted)] text-white hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--muted)]/40 transition">
                 Upload Resume
               </a>
 

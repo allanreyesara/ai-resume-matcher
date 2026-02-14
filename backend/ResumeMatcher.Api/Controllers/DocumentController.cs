@@ -3,7 +3,6 @@ using ResumeMatcher.Api.Infrastructure.Data;
 using ResumeMatcher.Api.Infrastructure.Storage;
 using Microsoft.AspNetCore.Authorization;
 using ResumeMatcher.Api.Contracts.Documents;
-using ResumeMatcher.Api.Domain.Entities;
 using DocumentEntity = ResumeMatcher.Api.Domain.Entities.Document;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;

@@ -40,7 +40,7 @@ export default function LoginForm() {
             window.location.href = "/";
             console.log({email, password});
         } catch (err) {
-            setError("Login failed. Please try again.");
+            setError("Email or password is incorrect. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -68,6 +68,12 @@ export default function LoginForm() {
                                     <label htmlFor="password" className="block mb-2 text-sm font-medium">Password</label>
                                     <input type="password" name="password" id="password" placeholder="••••••••" className="bg-[var(--background)] border border-[var(--muted)] text-[var(--foreground)] placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-[var(--muted)] focus:border-[var(--muted)] block w-full p-2.5" required />
                                 </div>
+                                {error && (
+                                    <div className="text-red-700 text-sm mt-2 font-medium flex items-center gap-1">
+                                        <span>⚠️</span>
+                                        {error}
+                                    </div>
+                                )}
                                 {/* Future remember me and forgot password functionality */}
                                 {/* <div className="flex items-center justify-between">
                                     <div className="flex items-start">
