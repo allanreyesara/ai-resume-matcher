@@ -6,6 +6,8 @@ using ResumeMatcher.Api.Contracts.Documents;
 using DocumentEntity = ResumeMatcher.Api.Domain.Entities.Document;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Runtime.CompilerServices;
+using System.Reflection.Metadata;
 
 
 
@@ -115,6 +117,56 @@ public class DocumentsController : ControllerBase
 
         await _db.SaveChangesAsync();
         return Ok();
+    }
+
+    [HttpGet("user/user-documents")]
+    public async Task<ActionResult<List<UserDocument>>> GetUserDocuments()
+    {
+        var userId = GetUserIdOrThrow();
+
+        var docs = await _db.Documents
+            .AsNoTracking()
+            .Where(d => d.UserId == userId && d.Status == DocumentEntity.DocumentStatus.Active)
+            .OrderByDescending(d => d.UploadedAt)
+            .Select(d => new UserDocument(
+                d.Id,
+                d.OriginalFileName,
+                d.Kind == DocumentEntity.DocumentKind.Resume
+                    ? DocumentKindDto.Resume
+                    : d.Kind == DocumentEntity.DocumentKind.CoverLetter
+                        ? DocumentKindDto.CoverLetter
+                        : DocumentKindDto.Other,
+                d.IsDefault,
+                d.UploadedAt
+            ))
+            .ToListAsync();
+
+        return Ok(docs);
+    }
+
+    [HttpGet("{documentId:guid}/download-url")]
+    public async Task<ActionResult<DownloadUrlResponse>> GetDownloadUrl(Guid documentId)
+    {
+        var userId = GetUserIdOrThrow();
+
+        var doc = await _db.Documents
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d =>
+                d.Id == documentId &&
+                d.UserId == userId &&
+                d.Status == DocumentEntity.DocumentStatus.Active);
+
+        if (doc is null)
+            return NotFound();
+
+        
+        var signedUrl = await _storage.CreateSignedDownloadUrlAsync(
+            bucket: doc.StorageBucket,
+            path: doc.StoragePath,
+            expiresInSeconds: SignedUrlExpirySeconds
+        );
+
+        return Ok(new DownloadUrlResponse(signedUrl));
     }
 
     private Guid GetUserIdOrThrow()

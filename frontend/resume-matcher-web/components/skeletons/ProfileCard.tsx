@@ -1,44 +1,76 @@
-import InfoRow from "@/components/InfoRow";
+"use client";
 
-export default function ProfileCard({ me }: { me: { id: string; email: string; fullName: string; createdAt: string; } }) {
-    return(
-        <div className="w-full max-w-5xl mx-auto mt-16 bg-[var(--surface)] border border-default rounded-3xl shadow-xl overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-3">
-                <div className="bg-gradient-to-br from-indigo-600 to-blue-500 p-10 text-white flex flex-col items-center justify-center">
-                    <div className="h-36 w-36 rounded-full bg-white/20 flex items-center justify-center text-6xl font-bold mb-6">
-                        {me.fullName.charAt(0).toUpperCase()}
-                    </div>
-                    <h1 className="text-3xl font-bold text-center">{me.fullName}</h1>
-                    <p className="opacity-90 mt-1 text-sm">{me.email}</p>
-                    </div>
-                    <div className="md:col-span-2 p-10 flex flex-col justify-between">
-                        <div>
-                            <h2 className="text-2xl font-semibold mb-6">Profile Overview</h2>
+type MeResponse = {
+  id: string;
+  email: string;
+  fullName: string;
+  createdAt: string;
+};
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                            <div className="bg-[var(--background)] rounded-xl p-4">
-                                <InfoRow
-                                label="Member since"
-                                value={new Date(me.createdAt).toLocaleDateString()}
-                                />
-                            </div>
+export default function ProfileCard({ me }: { me: MeResponse }) {
+  const createdAtPretty = me?.createdAt
+    ? new Date(me.createdAt).toLocaleDateString()
+    : "";
 
-                            <div className="bg-[var(--background)] rounded-xl p-4">
-                                <InfoRow label="Account status" value="Active" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <a href="/documents/upload" className="flex-1 py-4 rounded-xl text-lg font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition shadow flex items-center justify-center text-center">
-                            Upload Resume
-                        </a>
-                        <button className="flex-1 py-4 rounded-xl text-lg font-semibold border border-default hover:bg-[var(--muted)]/10 transition">
-                            View matches
-                        </button>
-                    </div>
-                </div>
-            </div>
+  const initials =
+    me?.fullName?.trim()?.[0]?.toUpperCase() ||
+    me?.email?.trim()?.[0]?.toUpperCase() ||
+    "U";
+
+  return (
+    <div className="w-[92%] max-w-6xl xl:max-w-7xl rounded-3xl shadow-lg overflow-hidden border border-black/10">
+      <div className="grid grid-cols-1 md:grid-cols-[340px_1fr]">
+        
+        {/* LEFT PANEL */}
+        <div className="bg-indigo-600 text-white p-10 flex flex-col justify-center items-center text-center">
+          <div className="w-28 h-28 rounded-full bg-white/20 flex items-center justify-center text-5xl font-bold mb-6">
+            {initials}
+          </div>
+
+          <div className="text-3xl font-extrabold leading-tight">
+            {me.fullName}
+          </div>
+          <div className="opacity-90 mt-2">{me.email}</div>
         </div>
 
-    );
+        {/* RIGHT PANEL */}
+        <div className="bg-slate-400/60 p-10 flex flex-col justify-center items-center text-center">
+          
+          <h2 className="text-2xl font-bold mb-6 text-center md:text-left">
+            Profile Overview
+          </h2>
+
+          {/* badges */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
+            <div className="bg-white/70 rounded-xl px-6 py-3 border text-center">
+              <span className="text-sm opacity-70 mr-2">Member since</span>
+              <span className="font-semibold">{createdAtPretty}</span>
+            </div>
+
+            <div className="bg-white/70 rounded-xl px-6 py-3 border text-center">
+              <span className="text-sm opacity-70 mr-2">Account status</span>
+              <span className="font-semibold">Active</span>
+            </div>
+          </div>
+
+          {/* BUTTONS */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-3xl">
+            
+            <a href="/documents/upload" className="flex-1 py-4 rounded-xl text-lg font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition shadow text-center">
+              Upload Resume
+            </a>
+
+            <a href="/me/documents" className="flex-1 py-4 rounded-xl text-lg font-semibold bg-slate-700 text-white hover:bg-slate-800 transition shadow text-center">
+              View resumes
+            </a>
+
+            <button className="flex-1 py-4 rounded-xl text-lg font-semibold bg-slate-700 text-white hover:bg-slate-800 transition shadow text-center">
+              View matches
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -18,7 +18,6 @@ export default function HomePage() {
               based on skills, experience, and relevance — no guessing, no wasted applications.
             </p>
 
-            {/* CTA */}
             <div className="flex flex-wrap items-center gap-4">
               {/* Primary */}
               <a href="/documents/upload" className="inline-flex items-center justify-center px-6 py-3 text-base font-semibold rounded-lg bg-[var(--muted)] text-white hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--muted)]/40 transition">
@@ -27,7 +26,7 @@ export default function HomePage() {
 
               {/* Secondary */}
               <a
-                href="#"
+                href="/me"
                 className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg border border-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--muted)]/15 focus:outline-none focus:ring-4 focus:ring-[var(--muted)]/30 transition">
                 Access Account
               </a>

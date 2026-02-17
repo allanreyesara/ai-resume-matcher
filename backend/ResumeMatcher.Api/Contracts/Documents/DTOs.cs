@@ -21,7 +21,6 @@ public record InitDocumentResponse(
     string SignedUploadUrl
 );
 
-
 public record FinalizeDocumentRequest(
     long SizeBytes,
     string? Sha256Hash
