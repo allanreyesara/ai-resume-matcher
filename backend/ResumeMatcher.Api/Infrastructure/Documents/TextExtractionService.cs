@@ -1,5 +1,5 @@
 using UglyToad.PdfPig;
-using ResumeMatcher.Api.Infrastructure.Storage;
+using ResumeMatcher.Api.Infrastructure.Documents;
 using ResumeMatcher.Api.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using DocumentEntity = ResumeMatcher.Api.Domain.Entities.Document;
@@ -13,12 +13,14 @@ public class TextExtractionService : ITextExtractionService
     private readonly ApplicationDbContext _db;
     private readonly IStorageService _storage;
     private readonly IPdfTextExtractor _pdfTextExtractor;
+    private readonly ITextNormalizer _textNormalizer;
 
-    public TextExtractionService(ApplicationDbContext db, IStorageService storage, IPdfTextExtractor pdfTextExtractor)
+    public TextExtractionService(ApplicationDbContext db, IStorageService storage, IPdfTextExtractor pdfTextExtractor, ITextNormalizer textNormalizer)
     {
         _db = db;
         _storage = storage;
         _pdfTextExtractor = pdfTextExtractor;
+        _textNormalizer = textNormalizer;
     }
 
     public async Task ExtractTextFromPdfAsync(Guid documentId, Guid userId)
@@ -54,8 +56,10 @@ public class TextExtractionService : ITextExtractionService
 
             await using var stream = await _storage.DownloadObjectAsync(doc.StorageBucket, doc.StoragePath);
             var text = _pdfTextExtractor.ExtractText(stream);
+            var normalizedText = _textNormalizer.Normalize(text);
 
             doc.ExtractedText = text;
+            doc.NormalizedExtractedText = normalizedText;
             doc.ExtractionStatus = string.IsNullOrWhiteSpace(text) ? DocumentEntity.TextExtractionStatus.Failed : 
             DocumentEntity.TextExtractionStatus.Completed;
 

@@ -6,6 +6,8 @@ public class Document
 {
     public string? ExtractedText { get; set; }
 
+    public string? NormalizedExtractedText { get; set; }
+
     public TextExtractionStatus ExtractionStatus { get; set; } = TextExtractionStatus.NotStarted;
     public string? ExtractionErrorMessage { get; set; }
     public enum TextExtractionStatus
