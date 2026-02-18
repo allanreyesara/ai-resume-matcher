@@ -50,8 +50,21 @@ public class DocumentsController : ControllerBase
         var kind = MapKind(request.Kind);
 
         var fileName = $"{Guid.NewGuid()}{ext}";
-        var storagePath = $"{userId}/{kind}/{fileName}";
+        var kindSegment = kind.ToString();
+        var storagePath = $"{userId}/{kindSegment}/{fileName}";
 
+        if (request.SetAsDefault)
+        {
+            var others = await _db.Documents.Where(
+                d => d.UserId == userId 
+                && d.Kind == kind
+                && d.Status == DocumentEntity.DocumentStatus.Active
+                && d.IsDefault
+            ).ToListAsync();
+
+            foreach (var other in others)
+                other.IsDefault = false;
+        }
         var doc = new DocumentEntity
         {
             Id = Guid.NewGuid(),
@@ -168,6 +181,57 @@ public class DocumentsController : ControllerBase
 
         return Ok(new DownloadUrlResponse(signedUrl));
     }
+
+    [HttpPost("{documentId:guid}/set-default")]
+    public async Task<IActionResult> SetDefault(Guid documentId)
+    {
+        var userId = GetUserIdOrThrow();
+
+        var doc = await _db.Documents.FirstOrDefaultAsync(d =>
+            d.Id == documentId &&
+            d.UserId == userId &&
+            d.Status == DocumentEntity.DocumentStatus.Active);
+
+        if (doc is null)
+            return NotFound();
+
+        var others = await _db.Documents.Where(d =>
+            d.UserId == userId &&
+            d.Id != doc.Id &&
+            d.Kind == doc.Kind &&
+            d.Status == DocumentEntity.DocumentStatus.Active &&
+            d.IsDefault).ToListAsync();
+
+        foreach (var other in others)
+            other.IsDefault = false;
+
+        doc.IsDefault = true;
+        await _db.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpDelete("{documentId:guid}")]
+    public async Task<IActionResult> DeleteDocument(Guid documentId)
+    {
+        var userId = GetUserIdOrThrow();
+
+        var doc = await _db.Documents.FirstOrDefaultAsync(d =>
+            d.Id == documentId &&
+            d.UserId == userId
+            );
+
+        if (doc is null)
+            return NotFound();
+
+        await _storage.DeleteObjectAsync(doc.StorageBucket, doc.StoragePath);
+        _db.Documents.Remove(doc);
+        await _db.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    
 
     private Guid GetUserIdOrThrow()
     {

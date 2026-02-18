@@ -4,6 +4,7 @@ import { apiFetch } from "@/lib/apiFetch";
 import { useState, useEffect } from "react";
 import ProfileSkeleton from "@/components/skeletons/ProfileSkeleton";
 import ProfileCard from "@/components/skeletons/ProfileCard";
+import { BACKEND_URL } from "@/lib/config";
 
 type MeResponse = {
         id: string;
@@ -21,7 +22,7 @@ export default function ProfileComponent() {
     let cancelled = false;  
     async function loadProfile() {
         try{
-            const res = await apiFetch("http://localhost:5162/auth/me");
+            const res = await apiFetch(`${BACKEND_URL}/auth/me`);
 
             if (!res.ok){
                 throw new Error("Failed to fetch profile data");

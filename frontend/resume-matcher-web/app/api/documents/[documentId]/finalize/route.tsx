@@ -1,3 +1,4 @@
+import { BACKEND_URL } from "@/lib/config";
 import { NextResponse } from "next/server";
 
 export async function POST(
@@ -9,7 +10,7 @@ export async function POST(
   const body = await req.json();
   const auth = req.headers.get("authorization") ?? "";
 
-  const apiRes = await fetch(`http://localhost:5162/documents/${documentId}/finalize`, {
+  const apiRes = await fetch(`${BACKEND_URL}/documents/${documentId}/finalize`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

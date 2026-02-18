@@ -1,3 +1,5 @@
+import { BACKEND_URL } from "./config";
+
 export async function apiFetch(input: RequestInfo, init: RequestInit = {}) {
 
     const accessToken = sessionStorage.getItem("accessToken");
@@ -18,7 +20,7 @@ export async function apiFetch(input: RequestInfo, init: RequestInit = {}) {
         return res;
     }
 
-    const refreshRes = await fetch("http://localhost:5162/auth/refresh", {
+    const refreshRes = await fetch(`${BACKEND_URL}/auth/refresh`, {
         method: "POST",
         credentials: "include",
     });

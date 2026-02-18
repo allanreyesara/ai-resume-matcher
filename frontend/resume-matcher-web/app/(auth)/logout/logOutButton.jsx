@@ -12,7 +12,7 @@ export default function LogOutButton() {
 
         try {
             const token = sessionStorage.getItem("accessToken");
-            const res = await fetch("http://localhost:5162/auth/logout", {
+            const res = await fetch(`${BACKEND_URL}/auth/logout`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

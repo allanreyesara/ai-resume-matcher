@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const protectedRoutes = ["/me"];
+const protectedRoutes = ["/me", "/documents"];
 const publicRoutes = ["/", "/login", "/signup"];
 
 export function proxy(request: NextRequest) {
@@ -16,6 +16,9 @@ export function proxy(request: NextRequest) {
 
   if (isProtectedRoute && !isAuthenticated) {
     return NextResponse.redirect(new URL("/login", request.url));
+  }
+  if (isPublicRoute && !isAuthenticated && pathname !== "/login") {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();

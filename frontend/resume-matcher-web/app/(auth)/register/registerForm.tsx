@@ -1,5 +1,6 @@
 "use client";
 
+import { BACKEND_URL } from "@/lib/config";
 import { useState, FormEvent } from "react";
 
 export default function RegisterForm() {
@@ -24,7 +25,7 @@ export default function RegisterForm() {
         }
 
         try{
-            const res = await fetch("http://localhost:5162/auth/register", {
+            const res = await fetch(`${BACKEND_URL}/auth/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

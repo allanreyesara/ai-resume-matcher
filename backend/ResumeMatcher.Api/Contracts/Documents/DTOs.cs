@@ -1,10 +1,13 @@
 namespace ResumeMatcher.Api.Contracts.Documents;
+using System.Text.Json.Serialization;
 
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum DocumentKindDto
 {
-    Resume,
-    CoverLetter,
-    Other
+    Resume = 0,
+    CoverLetter = 1,
+    Other = 2
 }
 
 public record InitDocumentRequest(
