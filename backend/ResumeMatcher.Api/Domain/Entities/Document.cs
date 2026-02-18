@@ -4,6 +4,17 @@ namespace ResumeMatcher.Api.Domain.Entities;
 
 public class Document
 {
+    public string? ExtractedText { get; set; }
+
+    public TextExtractionStatus ExtractionStatus { get; set; } = TextExtractionStatus.NotStarted;
+    public string? ExtractionErrorMessage { get; set; }
+    public enum TextExtractionStatus
+    {
+        NotStarted = 0,
+        InProgress = 1,
+        Completed = 2,
+        Failed = 3
+    }
     public enum DocumentStatus
     {
         PendingUpload = 0,

@@ -56,6 +56,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddScoped<ITextExtractionService, TextExtractionService>();
 
 builder.Services.Configure<SupabaseOptions>(builder.Configuration.GetSection("Supabase"));
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
@@ -83,6 +84,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddScoped<ResumeMatcher.Api.Infrastructure.Storage.IPdfTextExtractor, ResumeMatcher.Api.Infrastructure.Storage.PdfTextExtractor>();
 builder.Services.AddHttpClient<IStorageService, SupabaseStorageService>();
 builder.Services.AddAuthorization();
 

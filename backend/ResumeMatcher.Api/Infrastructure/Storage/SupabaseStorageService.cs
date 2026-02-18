@@ -149,4 +149,20 @@ public class SupabaseStorageService : IStorageService
         throw new InvalidOperationException($"Supabase delete failed: {(int)res.StatusCode} {res.ReasonPhrase}. Body: {body}  ");
         
     }
+
+    public async Task<Stream> DownloadObjectAsync(string bucket, string path)
+    {
+        var safePath = string.Join('/', path.Split('/').Select(Uri.EscapeDataString));
+        var url = $"{_options.Url}/storage/v1/object/{bucket}/{safePath}";
+
+        using var req = new HttpRequestMessage(HttpMethod.Get, url);
+        req.Headers.Add("Authorization", $"Bearer {_options.ServiceRoleKey}");
+        var res = await _httpClient.SendAsync(req);
+        if (!res.IsSuccessStatusCode)
+        {
+            var body = await res.Content.ReadAsStringAsync();
+            throw new InvalidOperationException($"Supabase download failed: {(int)res.StatusCode} {res.ReasonPhrase}. Body: {body}");
+        }
+        return await res.Content.ReadAsStreamAsync();
+    }
 }

@@ -22,11 +22,15 @@ public class DocumentsController : ControllerBase
     private readonly ApplicationDbContext _db;
     private readonly IStorageService _storage;
 
+    private readonly ITextExtractionService _textExtractionService;
+
     private const string BucketName = "documents-ai-matcher";
     private const int SignedUrlExpirySeconds = 120;
 
-    public DocumentsController(ApplicationDbContext db, IStorageService storage)
+    public DocumentsController(ApplicationDbContext db, IStorageService storage, ITextExtractionService textExtractionService)
+    
     {
+        _textExtractionService = textExtractionService;
         _db = db;
         _storage = storage;
     }
@@ -129,6 +133,8 @@ public class DocumentsController : ControllerBase
         }
 
         await _db.SaveChangesAsync();
+        await _textExtractionService.ExtractTextFromPdfAsync(doc.Id, userId);
+        
         return Ok();
     }
 
