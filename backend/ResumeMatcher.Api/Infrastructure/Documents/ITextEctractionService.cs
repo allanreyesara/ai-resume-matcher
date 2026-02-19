@@ -1,6 +1,4 @@
-namespace ResumeMatcher.Api.Infrastructure.Storage;
-
 public interface ITextExtractionService
 {
-    Task ExtractTextFromPdfAsync(Guid documentId, Guid userId);
+    Task<string> ExtractTextFromPdfAsync(Guid documentId, Guid userId, CancellationToken ct = default);
 }

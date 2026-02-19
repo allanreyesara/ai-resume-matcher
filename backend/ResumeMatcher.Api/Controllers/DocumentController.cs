@@ -4,9 +4,11 @@ using ResumeMatcher.Api.Infrastructure.Storage;
 using Microsoft.AspNetCore.Authorization;
 using ResumeMatcher.Api.Contracts.Documents;
 using DocumentEntity = ResumeMatcher.Api.Domain.Entities.Document;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Runtime.CompilerServices;
+using ResumeMatcher.Api.Infrastructure.AI;
+
 using System.Reflection.Metadata;
 
 
@@ -24,15 +26,19 @@ public class DocumentsController : ControllerBase
 
     private readonly ITextExtractionService _textExtractionService;
 
+    private readonly ILLMClient _llmClient;
+
     private const string BucketName = "documents-ai-matcher";
     private const int SignedUrlExpirySeconds = 120;
 
-    public DocumentsController(ApplicationDbContext db, IStorageService storage, ITextExtractionService textExtractionService)
+    public DocumentsController(ApplicationDbContext db, IStorageService storage, ITextExtractionService textExtractionService, ILLMClient llmClient)
     
     {
         _textExtractionService = textExtractionService;
         _db = db;
         _storage = storage;
+
+        _llmClient = llmClient;
     }
 
     [HttpPost("init")]
@@ -237,7 +243,28 @@ public class DocumentsController : ControllerBase
         return NoContent();
     }
 
+    [HttpPost("{id:guid}/process")]
+    public async Task<IActionResult> Process(Guid id, [FromServices] DocumentProcessingService processor, CancellationToken ct)
+    {
+        await processor.ProcessAsync(id, ct);
+        return Ok(new { message = "Processed", documentId = id });
+    }
+
+    [HttpGet("{id:guid}/parsed")]
+    public async Task<IActionResult> GetParsed(Guid id, [FromServices] ApplicationDbContext db, CancellationToken ct)
+    {
+        var doc = await db.Documents.FindAsync(new object[] { id }, ct);
+        if (doc is null) return NotFound();
+
+        return Ok(new {
+            id = doc.Id,
+            parsedAtUtc = doc.ParsedAtUtc,
+            parsed = JsonSerializer.Deserialize<object>(doc.ParsedResumeJson!)
+        });
+    }
+
     
+
 
     private Guid GetUserIdOrThrow()
     {

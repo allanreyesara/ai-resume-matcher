@@ -7,6 +7,8 @@ public class Document
     public string? ExtractedText { get; set; }
 
     public string? NormalizedExtractedText { get; set; }
+    public string? ParsedResumeJson { get; set; }
+    public DateTimeOffset? ParsedAtUtc { get; set; }
 
     public TextExtractionStatus ExtractionStatus { get; set; } = TextExtractionStatus.NotStarted;
     public string? ExtractionErrorMessage { get; set; }

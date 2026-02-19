@@ -6,7 +6,9 @@ using Microsoft.OpenApi.Models;
 using ResumeMatcher.Api.Infrastructure.Data;
 using ResumeMatcher.Api.Infrastructure.Storage;
 using ResumeMatcher.Api.Infrastructure.Documents;
+using ResumeMatcher.Api.Contracts.Documents;
 using ResumeMatcher.Api.Infrastructure.Data.Auth;
+using ResumeMatcher.Api.Infrastructure.AI;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -59,6 +61,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<ITextExtractionService, TextExtractionService>();
 builder.Services.AddScoped<ITextNormalizer, TextNormalizer>();
+builder.Services.AddScoped<IResumeParserService, ResumeParserServiceImplementation>();
+builder.Services.AddScoped<DocumentProcessingService>();
 
 builder.Services.Configure<SupabaseOptions>(builder.Configuration.GetSection("Supabase"));
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
@@ -88,6 +92,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddScoped<ResumeMatcher.Api.Infrastructure.Storage.IPdfTextExtractor, ResumeMatcher.Api.Infrastructure.Storage.PdfTextExtractor>();
 builder.Services.AddHttpClient<IStorageService, SupabaseStorageService>();
+builder.Services.AddHttpClient<ILLMClient, OpenAiClient>();
 builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
