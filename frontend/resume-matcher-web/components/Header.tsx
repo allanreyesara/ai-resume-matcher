@@ -35,8 +35,8 @@ export default function Header() {
             <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
               <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-default rounded-base bg-[var(--surface)] md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0">
                 <li><a href="/" className="block py-2 px-3 hover:opacity-80">Home</a></li>
-                <li><a href="/" className="block py-2 px-3 hover:opacity-80">About</a></li>
-                <li><a href="/" className="block py-2 px-3 hover:opacity-80">Services</a></li>
+                <li><a href="/about" className="block py-2 px-3 hover:opacity-80">About</a></li>
+                <li><a href="/services" className="block py-2 px-3 hover:opacity-80">Services</a></li>
                 <li className="relative">
                   {isLoggedIn ? (
                     <>

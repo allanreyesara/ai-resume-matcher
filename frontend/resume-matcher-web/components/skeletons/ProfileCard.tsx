@@ -64,9 +64,9 @@ export default function ProfileCard({ me }: { me: MeResponse }) {
               View resumes
             </a>
 
-            <button className="flex-1 py-4 rounded-xl text-lg font-semibold bg-slate-700 text-white hover:bg-slate-800 transition shadow text-center">
-              View matches
-            </button>
+            <a href="/documents/match" className="flex-1 py-4 rounded-xl text-lg font-semibold bg-slate-700 text-white hover:bg-slate-800 transition shadow text-center">
+              Match Jobs
+            </a>
 
           </div>
         </div>

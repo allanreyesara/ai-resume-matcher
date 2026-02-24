@@ -14,7 +14,7 @@ export default function PublicLayout({
         <Header />
       </header>
 
-      <main className="pt-20 min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+      <main className="pt-20 min-h-screen bg-[var(--background)] text-[var(--foreground)] overflow-x-hidden">
         {children}
       </main>
 
