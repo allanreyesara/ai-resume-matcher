@@ -27,17 +27,18 @@ public class DocumentsController : ControllerBase
     private readonly ITextExtractionService _textExtractionService;
 
     private readonly ILLMClient _llmClient;
+    private readonly IEmbeddingService _embedding; 
 
     private const string BucketName = "documents-ai-matcher";
     private const int SignedUrlExpirySeconds = 120;
 
-    public DocumentsController(ApplicationDbContext db, IStorageService storage, ITextExtractionService textExtractionService, ILLMClient llmClient)
+    public DocumentsController(ApplicationDbContext db, IStorageService storage, ITextExtractionService textExtractionService, ILLMClient llmClient, IEmbeddingService embedding)
     
     {
         _textExtractionService = textExtractionService;
         _db = db;
         _storage = storage;
-
+        _embedding = embedding;
         _llmClient = llmClient;
     }
 
@@ -111,7 +112,7 @@ public class DocumentsController : ControllerBase
     }
 
     [HttpPost("{documentId:guid}/finalize")]
-    public async Task<IActionResult> Finalize(Guid documentId, [FromBody] FinalizeDocumentRequest request)
+    public async Task<IActionResult> Finalize(Guid documentId, [FromBody] FinalizeDocumentRequest request, DocumentProcessingService processor, CancellationToken ct, ResumeEmbeddingService embeddings)
     {
         if (request.SizeBytes <= 0)
             return BadRequest("SizeBytes must be > 0");
@@ -121,8 +122,6 @@ public class DocumentsController : ControllerBase
 
         if (doc is null)
             return NotFound();
-        if (doc.Status != DocumentEntity.DocumentStatus.PendingUpload)
-            return BadRequest($"Cannot finalize document in status '{doc.Status}'");
         
         doc.SizeBytes = request.SizeBytes;
         doc.Sha256Hash = request.Sha256Hash;
@@ -138,10 +137,35 @@ public class DocumentsController : ControllerBase
                 other.IsDefault = false;
         }
 
-        await _db.SaveChangesAsync();
-        await _textExtractionService.ExtractTextFromPdfAsync(doc.Id, userId);
+        await _db.SaveChangesAsync(ct);
+
         
-        return Ok();
+        await processor.ProcessAsync(doc.Id, ct);
+        await _textExtractionService.ExtractTextFromPdfAsync(doc.Id, userId);
+
+        var docAfterExtract = await _db.Documents.FirstOrDefaultAsync(d => d.Id == documentId && d.UserId == userId, ct);
+
+        if (docAfterExtract is null)
+        {
+            return NotFound();
+        }
+
+        var resumeText = docAfterExtract.NormalizedExtractedText
+                                        ?? docAfterExtract.ExtractedText
+                                        ?? docAfterExtract.ParsedResumeJson
+                                        ?? "";
+        if (string.IsNullOrWhiteSpace(resumeText))
+        {
+            return BadRequest("No extracted/normalized/parsed text available to generate embeddings.");
+        }
+        var already = await _db.ResumeEmbeddings.AnyAsync(x => x.DocumentId == documentId && x.UserId == userId, ct);
+        if (!already)
+        {
+            var count = await embeddings.GenerateAndStoreAsync(docAfterExtract.Id, userId, resumeText, ct);
+            return Ok(new { documentId, embeddingsChunks = count});
+        }
+        return Ok(new { documentId, embeddingsChunks = 0, reused = true});
+        
     }
 
     [HttpGet("user/user-documents")]
@@ -243,13 +267,6 @@ public class DocumentsController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("{id:guid}/process")]
-    public async Task<IActionResult> Process(Guid id, [FromServices] DocumentProcessingService processor, CancellationToken ct)
-    {
-        await processor.ProcessAsync(id, ct);
-        return Ok(new { message = "Processed", documentId = id });
-    }
-
     [HttpGet("{id:guid}/parsed")]
     public async Task<IActionResult> GetParsed(Guid id, [FromServices] ApplicationDbContext db, CancellationToken ct)
     {
@@ -262,9 +279,6 @@ public class DocumentsController : ControllerBase
             parsed = JsonSerializer.Deserialize<object>(doc.ParsedResumeJson!)
         });
     }
-
-    
-
 
     private Guid GetUserIdOrThrow()
     {

@@ -43,8 +43,7 @@ public sealed class ResumeParserServiceImplementation : IResumeParserService
 
         var repaired = await _llmClient.GenerateAsync(BuildRepairPrompt(raw), cancellationToken);
 
-        if (TryDeserialize(repaired, normalizedText.Length, out parsedResume, out error))
-            return parsedResume;
+        if (TryDeserialize(repaired, normalizedText.Length, out parsedResume, out error)) return parsedResume;
 
         return new ParsedResume
         {

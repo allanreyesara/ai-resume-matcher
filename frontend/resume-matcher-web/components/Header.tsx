@@ -53,6 +53,9 @@ export default function Header() {
                           <a href="/documents/upload" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-400">
                             Upload Resume
                           </a>
+                          <a href="/documents" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-400">
+                            My Resumes
+                          </a>
                           <div className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-400" onClick={() => setOpen(false)}>
                             <LogOutButton />
                           </div>

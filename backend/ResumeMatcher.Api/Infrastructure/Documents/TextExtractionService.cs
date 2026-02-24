@@ -26,14 +26,11 @@ public class TextExtractionService : ITextExtractionService
 
     public async Task<string> ExtractTextFromPdfAsync(Guid documentId, Guid userId, CancellationToken ct = default)
     {
-        var doc = await _db.Documents
-            .FirstOrDefaultAsync(d => d.Id == documentId && d.UserId == userId, ct);
+        var doc = await _db.Documents.FirstOrDefaultAsync(d => d.Id == documentId && d.UserId == userId, ct);
 
-        if (doc is null)
-            throw new InvalidOperationException("Document not found");
+        if (doc is null) throw new InvalidOperationException("Document not found");
 
-        if (doc.Status != DocumentEntity.DocumentStatus.Active)
-            throw new InvalidOperationException($"Cannot extract text from document with status {doc.Status}");
+        if (doc.Status != DocumentEntity.DocumentStatus.Active) throw new InvalidOperationException($"Cannot extract text from document with status {doc.Status}");
 
         doc.ExtractionStatus = DocumentEntity.TextExtractionStatus.InProgress;
         doc.ExtractionErrorMessage = null;
@@ -41,9 +38,7 @@ public class TextExtractionService : ITextExtractionService
 
         try
         {
-            var isPdf =
-                string.Equals(doc.MimeType, "application/pdf", StringComparison.OrdinalIgnoreCase) ||
-                doc.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
+            var isPdf = string.Equals(doc.MimeType, "application/pdf", StringComparison.OrdinalIgnoreCase) || doc.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
 
             if (!isPdf)
             {

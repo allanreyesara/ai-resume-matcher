@@ -91,7 +91,7 @@ export default function UploadResumePage(){
         setStatus("Calculating file hash...");
         const hash = await sha256(file);
 
-        setStatus("Finalizing upload...");
+        setStatus("Extracting skills, experience and structure from your resume . . .");
         const finalizeRes = await fetch(`/api/documents/${init.documentId}/finalize`, {
             method: "POST",
             headers: {

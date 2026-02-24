@@ -152,7 +152,6 @@ export default function DocumentsPage() {
         <main>
             <section>
             <div className="flex flex-col items-center justify-start px-6 py-10 mx-auto lg:py-12 max-w-6xl">
-                {/* Title */}
                 <div className="w-full text-center">
                 <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
                     Your documents

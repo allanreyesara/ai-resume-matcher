@@ -30,21 +30,17 @@ public sealed class DocumentProcessingService
 
     public async Task ProcessAsync(Guid documentId, CancellationToken ct = default)
     {
-        var doc = await _db.Documents.FirstOrDefaultAsync(x => x.Id == documentId, ct);
+        var doc = await _db.Documents.FirstOrDefaultAsync(d => d.Id == documentId, ct);
         if (doc is null) throw new InvalidOperationException("Document not found.");
 
         var userId = doc.UserId;
 
-        // 1) Extract
         var rawText = await _extractor.ExtractTextFromPdfAsync(documentId, userId);
 
-        // 2) Normalize
         var normalized = _normalizer.Normalize(rawText);
 
-        // 3) Parse
         var parsed = await _parser.ParseResumeAsync(normalized, ct);
 
-        // 4) Persist
         doc.NormalizedExtractedText = normalized;
         doc.ParsedResumeJson = JsonSerializer.Serialize(parsed);
         doc.ParsedAtUtc = DateTimeOffset.UtcNow;
