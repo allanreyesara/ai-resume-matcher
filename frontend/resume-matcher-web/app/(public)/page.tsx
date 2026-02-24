@@ -2,12 +2,8 @@ import Link from "next/link";
 export default function HomePage() {
   return (
     <main className="bg-[var(--background)] text-[var(--foreground)] overflow-hidden pt-16">
-
-      {/* Hero Section */}
       <section>
         <div className="grid max-w-screen-xl mx-auto px-6 py-14 lg:py-16 lg:grid-cols-12 lg:gap-10 items-center">
-          
-          {/* Text */}
           <div className="mr-auto place-self-center lg:col-span-7">
             <h1 className="max-w-xl mb-6 text-4xl font-extrabold tracking-tight leading-tight md:text-5xl xl:text-6xl">
               Find the jobs that match your resume — instantly.
@@ -19,20 +15,16 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-wrap items-center gap-4">
-              {/* Primary */}
-              <a href="/documents/upload" className="inline-flex items-center justify-center px-6 py-3 text-base font-semibold rounded-lg bg-[var(--muted)] text-white hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--muted)]/40 transition">
-                Upload Resume
+              <a href="/documents/match" className="inline-flex items-center justify-center px-6 py-3 text-base font-semibold rounded-lg bg-[var(--muted)] text-white hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--muted)]/40 transition">
+                Analyze Job Posting
               </a>
 
-              {/* Secondary */}
               <a
                 href="/me"
                 className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg border border-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--muted)]/15 focus:outline-none focus:ring-4 focus:ring-[var(--muted)]/30 transition">
                 Access Account
               </a>
             </div>
-
-            {/* Microcopy */}
             <p className="mt-4 text-sm opacity-60">
               PDF & DOCX supported • Instant AI match score
             </p>
@@ -47,7 +39,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      {/* Features Strip */}
       <section className="border-t border-[var(--muted)]/20 bg-[var(--surface)]/20">
       <div className="max-w-screen-xl mx-auto px-6 py-12">
         <div className="grid gap-10 md:grid-cols-3 text-center">
@@ -110,7 +101,6 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            {/* Step 1 */}
             <div className="rounded-2xl bg-[var(--surface)]/25 border border-[var(--muted)]/20 p-6">
               <div className="flex items-center gap-3">
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--muted)] text-white text-sm font-bold">
@@ -122,8 +112,6 @@ export default function HomePage() {
                 Drop a PDF or DOCX. We extract your skills, experience, and keywords.
               </p>
             </div>
-
-            {/* Step 2 */}
             <div className="rounded-2xl bg-[var(--surface)]/25 border border-[var(--muted)]/20 p-6">
               <div className="flex items-center gap-3">
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--muted)] text-white text-sm font-bold">
@@ -135,8 +123,6 @@ export default function HomePage() {
                 We compare your resume to job requirements and calculate a match score.
               </p>
             </div>
-
-            {/* Step 3 */}
             <div className="rounded-2xl bg-[var(--surface)]/25 border border-[var(--muted)]/20 p-6">
               <div className="flex items-center gap-3">
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--muted)] text-white text-sm font-bold">
@@ -151,8 +137,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* BOTTOM CTA */}
       <section id="contact" aria-label="Call to action" className="border-t border-[var(--muted)]/20">
         <div className="max-w-screen-xl mx-auto px-6 py-14 sm:py-16">
           <div className="rounded-3xl bg-[var(--surface)]/25 border border-[var(--muted)]/20 p-8 sm:p-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -175,8 +159,6 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-
-          {/* tiny trust row */}
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm opacity-70">
             <span>🔒 Privacy-first</span>
             <span>⚡ Results in seconds</span>

@@ -50,6 +50,9 @@ export default function Header() {
                           <a href="/me" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-400">
                             My Profile
                           </a>
+                          <a href="/documents/match" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-400">
+                            Analyze Job
+                          </a>
                           <a href="/documents/upload" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-400">
                             Upload Resume
                           </a>

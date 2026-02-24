@@ -27,9 +27,18 @@ public sealed class OpenAiClient : ILLMClient
         var body = new
         {
             model = "gpt-4.1-mini",
-            messages = new[] { new { role = "user", content = prompt } },
+            messages = new object[]
+            {
+                new
+                {
+                    role = "system",
+                    content = "You are a strict JSON generator. Output ONLY valid raw JSON. No markdown. No code fences. No extra text."
+                },
+                new { role = "user", content = prompt }
+            },
+            response_format = new { type = "json_object" }, 
             temperature = 0.1,
-            max_tokens = 800 
+            max_tokens = 1200 
         };
 
         req.Content = new StringContent(
@@ -46,10 +55,12 @@ public sealed class OpenAiClient : ILLMClient
 
         using var doc = JsonDocument.Parse(payload);
 
-        return doc.RootElement
+        var content = doc.RootElement
             .GetProperty("choices")[0]
             .GetProperty("message")
             .GetProperty("content")
-            .GetString() ?? "";
+            .GetString();
+
+        return content ?? "";
     }
 }

@@ -42,12 +42,15 @@ public class MatchService : IMatchService
         var normalizedJob = _textNormalizer.Normalize(jobText);
         var jobChunks = _chunker.Chunk(normalizedJob);
         var jobVectors = await _embeddingService.GenerateAsync(jobChunks);
-
         var resumeVectors = await _vectorRepo.GetByDocumentId(documentId, userId);
-
         var candidateK = useLlm ? Math.Max(topK * 4, 20) : topK;
 
-        var similarities = _vectorSearch.FindTopMatches(jobChunks, jobVectors, resumeVectors, candidateK);
+        var similarities = _vectorSearch.FindTopMatches(
+            jobChunks,
+            jobVectors,
+            resumeVectors,
+            candidateK
+        );
 
         if (useLlm)
         {
@@ -78,6 +81,25 @@ public class MatchService : IMatchService
             MissingSkills = s.MissingSkills
         }).ToList();
 
+        double overall01 = 0.0;
+
+        if (items.Count > 0)
+        {
+            overall01 = items.Average(x =>
+            {
+                var sim = x.Similarity; 
+
+                var llm01 = x.Score.HasValue ? (x.Score.Value / 100.0) : (double?)null;
+
+                if (!useLlm || llm01 is null)
+                    return sim; 
+                const double wSim = 0.7;
+                const double wLlm = 0.3;
+                return (wSim * sim) + (wLlm * llm01.Value);
+            });
+        }
+        overall01 = Math.Max(0.0, Math.Min(1.0, overall01));
+
         sw.Stop();
 
         return new MatchResultDto
@@ -85,11 +107,7 @@ public class MatchService : IMatchService
             DocumentId = documentId,
             TopK = topK,
             UsedLlm = useLlm,
-            OverallScore = items.Count == 0
-                ? 0
-                : (useLlm
-                    ? items.Average(x => (x.Score ?? 0) / 100.0)
-                    : items.Average(x => x.Similarity)),
+            OverallScorePercent = overall01 * 100.0,
             Summary = summary,
             Matches = items,
             Meta = new MatchMetaDto

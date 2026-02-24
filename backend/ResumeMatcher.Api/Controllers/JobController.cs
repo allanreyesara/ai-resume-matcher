@@ -23,18 +23,18 @@ public class JobController : ControllerBase
         _matchService = matchService;
 
     }
-    [HttpPost("/match")]
-    public async Task<IActionResult> JobMatch([FromBody] JobMatchRequest request)
+    [HttpPost("{documentId:guid}/match")]
+    public async Task<IActionResult> JobMatch([FromBody] JobMatchRequest request, Guid documentId)
     {
         if (string.IsNullOrWhiteSpace(request.JobText))
         {
             return BadRequest("Job text is required");
         }
         var userId = GetUserIdFromJwt();
-
+        
         var matches = await _matchService.MatchAsync(
             userId, 
-            request.DocumentId,
+            documentId,
             request.JobText,
             request.TopK,
             request.useLlm

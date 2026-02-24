@@ -2,18 +2,8 @@
 
 import { apiFetch } from "@/lib/apiFetch";
 import { BACKEND_URL } from "@/lib/config";
-import { Link } from "lucide-react";
 import {  useEffect, useMemo, useState } from "react";
-
-type DocumentKind = "Resume" | "CoverLetter" | "Other";
-
-type UserDocument = {
-    id: string;
-    originalFileName: string;
-    kind: DocumentKind;
-    isDefault: boolean; 
-    uploadedAt: string;
-};
+import { fetchUserDocuments, type UserDocument, type DocumentKind } from "@/lib/documents";
 
 function formatDate(iso: string) {
     const date = new Date(iso);
@@ -56,17 +46,7 @@ export default function DocumentsPage() {
         try {
             setLoading(true);
             setError(null);
-
-            if (!canUseStorage) return;
-
-            const res = await apiFetch(`${BACKEND_URL}/documents/user/user-documents`, {
-                method: "GET",
-                cache: "no-store",
-            });
-
-            if (!res.ok) throw new Error(await res.text());
-
-            const data = (await res.json()) as UserDocument[];
+            const data = await fetchUserDocuments();
             setDocuments(data);
         } catch (e: any) {
             setDocuments([]);
