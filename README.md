@@ -4,85 +4,101 @@
 
 The project is designed as a real-world, production-oriented system, built incrementally with a clear separation between frontend and backend concerns.
 
-> 🚧 **Work in progress** — the project is under active development and evolving continuously.
+> 🚧 **MVP completed — active development continues**
 
 ---
 
 ## Project Overview
 
-The goal of AI Resume Matcher is to reduce the friction in job searching by:
-- Analyzing resumes using AI techniques
-- Comparing candidate profiles against job requirements
-- Providing ranked job matches and actionable insights
+The goal of AI Resume Matcher is to reduce friction in job searching by:
 
-This repository reflects an iterative development approach, prioritizing solid architecture, clarity, and scalability over premature optimization.
+- Analyzing resumes using AI techniques  
+- Comparing candidate profiles against job requirements  
+- Producing match scores, summaries, and actionable insights  
+
+The system is intentionally built with production architecture in mind, focusing on scalability, reliability, and clarity rather than demo-style shortcuts.
 
 ---
 
 ## Architecture
 
-The project is split into two main parts:
+The project follows a **full-stack, service-oriented architecture** split into two layers.
 
 ### Frontend
+
 - Built with **Next.js (App Router)** and **Tailwind CSS**
-- Focused on user experience, clarity, and responsive design
-- Uses CSS variables as design tokens for consistent theming
-- Currently implements the public landing page and UI foundations
+- Uses design tokens via CSS variables for consistent theming
+- Implements the landing page, resume management UI, and matching workflow
+- Handles authenticated requests and client-side state
 
 ### Backend
+
 - Built with **.NET 8** and **ASP.NET Core Web API**
-- Uses **Entity Framework Core** and **PostgreSQL (Supabase)**
-- JWT-based authentication in progress
-- Designed to support resume processing, AI matching, and secure APIs
+- Uses **Entity Framework Core** with **PostgreSQL (Supabase)**
+- JWT-based authentication and protected endpoints
+- Implements the full AI matching pipeline
+
+Backend pipeline includes:
+
+1. Resume text extraction  
+2. Text normalization and chunking  
+3. Embedding generation via OpenAI  
+4. Vector similarity search  
+5. LLM-based scoring and reasoning  
+6. Match summarization  
 
 ---
 
 ## Tech Stack
 
 ### Frontend
+
 - Next.js (App Router)
 - TypeScript
 - Tailwind CSS
-- CSS Variables (design tokens)
+- CSS variables (design tokens)
 
 ### Backend
-- .NET 8
-- ASP.NET Core
+
+- .NET 8 / ASP.NET Core Web API
 - Entity Framework Core
 - PostgreSQL (Supabase)
+- OpenAI API (embeddings + LLM scoring)
 - JWT Authentication
 
 ---
 
 ## Current Status
 
-- Frontend landing page implemented
-- Shared design system in place
-- Backend infrastructure and database configured
-- Authentication flow under development
-- Core AI matching features planned and scoped
+✔ Landing page and UI implemented  
+✔ Resume upload and storage pipeline  
+✔ Full AI matching pipeline working end-to-end  
+✔ Semantic scoring and summaries generated via LLM  
+✔ Protected API endpoints  
+
+The application is now a functional MVP capable of performing real resume-to-job analysis.
 
 ---
 
-## Planned Features
+## Planned Improvements
 
-- User authentication and authorization
-- Resume upload and parsing
-- AI-powered resume-to-job matching
-- Match scoring and ranked job recommendations
-- User dashboard and history
-- Secure and documented REST API
+- Job description auto-cleaning (noise reduction)
+- Match history and dashboard
+- Recruiter-side job posting support
+- Improved explainability of match results
+- Deployment pipeline and monitoring
 
 ---
 
 ## Development Philosophy
 
-- Incremental, real-world development
-- Clear separation of concerns
-- Readability and maintainability over shortcuts
-- No mock features or placeholder business logic
+- Real-world architecture over demo shortcuts  
+- Strong separation of concerns  
+- Maintainability and clarity first  
+- Incremental delivery of working features  
+- AI used as a reasoning layer, not a gimmick  
 
-This repository is meant to showcase practical full-stack engineering rather than a polished, finished product.
+This repository showcases practical full-stack AI engineering and system design.
 
 ---
 
