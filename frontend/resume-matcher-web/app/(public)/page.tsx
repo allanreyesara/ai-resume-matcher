@@ -151,10 +151,10 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/" className="inline-flex items-center justify-center px-6 py-3 text-base font-semibold rounded-lg bg-[var(--muted)] text-white hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--muted)]/40 transition" >
+              <Link href="/documents/upload" className="inline-flex items-center justify-center px-6 py-3 text-base font-semibold rounded-lg bg-[var(--muted)] text-white hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--muted)]/40 transition" >
                 Upload Resume
               </Link>
-              <Link href="/" className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg border border-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--muted)]/15 focus:outline-none focus:ring-4 focus:ring-[var(--muted)]/30 transition" >
+              <Link href="/login" className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg border border-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--muted)]/15 focus:outline-none focus:ring-4 focus:ring-[var(--muted)]/30 transition" >
                 Sign in
               </Link>
             </div>
