@@ -1,6 +1,8 @@
 # AI Resume Matcher
 
-**AI Resume Matcher** is a full-stack web application that uses artificial intelligence to analyze resumes and match candidates with relevant job opportunities based on skills, experience, and overall profile alignment.
+**AI Resume Matcher** is a full-stack AI-powered web application that analyzes resumes and matches candidates with relevant job opportunities based on skills, experience, and overall profile alignment.
+
+🌐 **Live Application:** https://resumematcher.app  
 
 The project is designed as a real-world, production-oriented system, built incrementally with a clear separation between frontend and backend concerns.
 
@@ -16,7 +18,7 @@ The goal of AI Resume Matcher is to reduce friction in job searching by:
 - Comparing candidate profiles against job requirements  
 - Producing match scores, summaries, and actionable insights  
 
-The system is intentionally built with production architecture in mind, focusing on scalability, reliability, and clarity rather than demo-style shortcuts.
+The system is intentionally built with production architecture in mind, focusing on scalability, reliability, and maintainability rather than demo-style shortcuts.
 
 ---
 
@@ -28,7 +30,7 @@ The project follows a **full-stack, service-oriented architecture** split into t
 
 - Built with **Next.js (App Router)** and **Tailwind CSS**
 - Uses design tokens via CSS variables for consistent theming
-- Implements the landing page, resume management UI, and matching workflow
+- Implements landing page, resume management UI, and matching workflow
 - Handles authenticated requests and client-side state
 
 ### Backend
@@ -98,7 +100,7 @@ The application is now a functional MVP capable of performing real resume-to-job
 - Incremental delivery of working features  
 - AI used as a reasoning layer, not a gimmick  
 
-This repository showcases practical full-stack AI engineering and system design.
+This repository showcases practical full-stack AI engineering and production-style system design.
 
 ---
 
