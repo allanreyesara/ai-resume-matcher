@@ -17,7 +17,10 @@ public sealed class OpenAiClient : ILLMClient
 
     public async Task<string> GenerateAsync(string prompt, CancellationToken ct = default)
     {
-        var apiKey = _config["OpenAI:ApiKey"];
+        var apiKey =
+            _config["OpenAI:ApiKey"] ??
+            _config["OPENAI_API_KEY"];
+
         if (string.IsNullOrWhiteSpace(apiKey))
             throw new InvalidOperationException("Missing OpenAI:ApiKey configuration.");
 
