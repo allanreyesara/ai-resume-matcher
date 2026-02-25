@@ -113,7 +113,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "https://resumematcher.app",
-                "https://www.resumematcher.app"
+                "https://www.resumematcher.app", 
+                "https://ai-resume-matcher-blush.vercel.app"
             )
             .AllowAnyHeader()
             .AllowAnyMethod()
@@ -132,12 +133,23 @@ if (app.Environment.IsDevelopment())
 
 app.UseRouting();
 
+app.Use(async (context, next) =>
+{
+    if (HttpMethods.IsOptions(context.Request.Method))
+    {
+        context.Response.StatusCode = StatusCodes.Status204NoContent;
+        return;
+    }
+    await next();
+});
+
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapControllers().RequireCors("AllowFrontend");
 app.MapControllers();
-app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+app.MapGet("/health", () => Results.Ok(new { status = "ok" })).RequireCors("AllowFrontend");
 
 app.Run();
