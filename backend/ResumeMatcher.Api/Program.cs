@@ -1,21 +1,22 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using ResumeMatcher.Api.Infrastructure.Data;
-using ResumeMatcher.Api.Infrastructure.Storage;
-using ResumeMatcher.Api.Infrastructure.Documents;
-using ResumeMatcher.Api.Infrastructure.Data.Auth;
 using ResumeMatcher.Api.Infrastructure.AI;
+using ResumeMatcher.Api.Infrastructure.Data;
+using ResumeMatcher.Api.Infrastructure.Data.Auth;
+using ResumeMatcher.Api.Infrastructure.Documents;
 using ResumeMatcher.Api.Infrastructure.Jobs;
+using ResumeMatcher.Api.Infrastructure.Storage;
 using ResumeMatcher.Api.Contracts.Documents;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Controllers + enums as strings
 builder.Services
     .AddControllers()
     .AddJsonOptions(o =>
@@ -24,7 +25,6 @@ builder.Services
     });
 
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "ResumeMatcher API", Version = "v1" });
@@ -55,9 +55,11 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Db
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// App services
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
@@ -73,18 +75,22 @@ builder.Services.AddScoped<DocumentProcessingService>();
 builder.Services.AddScoped<IEmbeddingService, OpenAiEmbeddingService>();
 builder.Services.AddScoped<IVectorSearch, VectorSearch>();
 builder.Services.AddScoped<IResumeVectorRepository, ResumeVectorRepository>();
+builder.Services.AddHttpClient<OpenAiEmbeddingsClient>();
 builder.Services.AddScoped<IMatchService, MatchService>();
 builder.Services.AddScoped<ILlmScorer, LlmScorer>();
 builder.Services.AddScoped<ResumeEmbeddingService>();
 
+// Http clients
 builder.Services.AddHttpClient<IStorageService, SupabaseStorageService>();
 builder.Services.AddHttpClient<ILLMClient, OpenAiClient>();
 builder.Services.AddHttpClient<IEmbeddingsClient, OpenAiEmbeddingsClient>();
 
+// Options
 builder.Services.Configure<SupabaseOptions>(builder.Configuration.GetSection("Supabase"));
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.Configure<RefreshTokenOptions>(builder.Configuration.GetSection("RefreshToken"));
 
+// Auth
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -107,18 +113,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+const string CorsPolicy = "AllowFrontend";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
+    options.AddPolicy(CorsPolicy, policy =>
     {
         policy.WithOrigins(
                 "https://resumematcher.app",
-                "https://www.resumematcher.app", 
-                "https://ai-resume-matcher-blush.vercel.app"
+                "https://www.resumematcher.app",
+                "https://ai-resume-matcher-blush.vercel.app" 
             )
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowCredentials(); 
     });
 });
 
@@ -129,18 +136,24 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+else
+{
+    
+    app.UseExceptionHandler("/error");
+}
 
 app.UseRouting();
 
-
-app.UseCors("AllowFrontend");
+app.UseCors(CorsPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapControllers();
+
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+
+app.MapGet("/error", () => Results.Problem("Unexpected error"))
+   .RequireCors(CorsPolicy);
 
 app.Run();

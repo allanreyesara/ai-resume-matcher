@@ -2,32 +2,35 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const protectedRoutes = ["/me", "/documents"];
-const publicRoutes = ["/", "/login", "/register", "/about", "/services"];
+const authPages = ["/login", "/register"];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isProtectedRoute = protectedRoutes.some((r) => pathname.startsWith(r));
-  const isPublicRoute = publicRoutes.includes(pathname);
-
-  const token = request.cookies.get("refresh_token")?.value;
-  const isAuthenticated = Boolean(token);
-
-  if (isProtectedRoute && !isAuthenticated) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
-  if (isAuthenticated && (pathname === "/login" || pathname === "/register")) {
-    return NextResponse.redirect(new URL("/me", request.url));
-  }
-
-  if (isPublicRoute) {
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname === "/favicon.ico" ||
+    /\.(.*)$/.test(pathname)
+  ) {
     return NextResponse.next();
+  }
+
+
+  const sessionCookie =
+    request.cookies.get("access_token")?.value ||
+    request.cookies.get("session")?.value ||
+    null;
+
+  const isAuthenticated = Boolean(sessionCookie);
+
+  if (isAuthenticated && authPages.includes(pathname)) {
+    return NextResponse.redirect(new URL("/me", request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next).*)"],
+  matcher: ["/:path*"],
 };
