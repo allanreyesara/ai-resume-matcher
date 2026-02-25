@@ -119,12 +119,15 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("cors", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        policy
-            .AllowAnyOrigin()
+        policy.WithOrigins(
+            "https://resumematcher.app",
+            "https://www.resumematcher.app"
+        )
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -139,7 +142,9 @@ if (app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection();
-app.UseCors("cors");
+app.UseRouting();
+
+app.UseCors("VercelCors");
 app.UseAuthentication();
 app.UseAuthorization();
 
