@@ -136,11 +136,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-else
-{
-    
-    app.UseExceptionHandler("/error");
-}
+
 
 app.UseRouting();
 
@@ -153,7 +149,5 @@ app.MapControllers();
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
-app.MapGet("/error", () => Results.Problem("Unexpected error"))
-   .RequireCors(CorsPolicy);
 
 app.Run();
