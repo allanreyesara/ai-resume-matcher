@@ -87,7 +87,12 @@ export default function LoginForm() {
                                     <a href="#" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>
                                 </div>
                                 */}
-                                <button type="submit" className="w-full bg-[var(--muted)] text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--muted)] transition">Sign in</button>
+                                <button type="submit" disabled={loading} className="w-full bg-[var(--muted)] text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--muted)] transition">{loading ? "Signing in..." : "Sign in"}</button>
+                                {loading && (
+                                    <p className="text-sm text-[var(--muted)] mt-3 text-center">
+                                        ⏳ First login may take a few seconds while the backend wakes up.
+                                    </p>
+                                )}
                                 <p className="text-sm font-light">
                                     Don’t have an account yet? <a href="/register" className="font-medium hover:underline">Sign up</a>
                                 </p>
