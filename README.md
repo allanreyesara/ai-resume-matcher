@@ -1,6 +1,6 @@
 # AI Resume Matcher
 
-**AI Resume Matcher** is a full-stack AI-powered web application that analyzes resumes and matches candidates with relevant job opportunities based on semantic understanding of skills, experience, and profile alignment — not just keyword matching.
+**AI Resume Matcher** is a full-stack AI-powered web application that analyzes resumes and matches candidates with relevant job opportunities based on semantic understanding of skills, experience, and profile alignment, not just keyword matching.
 
 🌐 **Live:** [resumematcher.app](https://resumematcher.app)
 
@@ -8,7 +8,7 @@
 
 ## What It Does
 
-Most resume matchers rely on keyword overlap. This system uses **semantic embeddings + LLM reasoning** to evaluate how well a candidate's actual experience maps to what a role requires — producing a score, a summary, and actionable insights.
+Most resume matchers rely on keyword overlap. This system uses **semantic embeddings + LLM reasoning** to evaluate how well a candidate's actual experience maps to what a role requires producing a score, a summary, and actionable insights.
 
 - Upload a resume → get matched against job descriptions
 - Receive a semantic match score with LLM-generated reasoning
@@ -18,7 +18,7 @@ Most resume matchers rely on keyword overlap. This system uses **semantic embedd
 
 ## Architecture
 
-Full-stack, service-oriented — designed for production, not demo shortcuts.
+Full-stack, service-oriented and designed for production, not demo shortcuts.
 
 ```
 Next.js (App Router)  →  ASP.NET Core Web API  →  PostgreSQL (Supabase)
@@ -111,4 +111,4 @@ npm run dev
 
 ## License
 
-MIT — [Allan Araya Reyes](https://github.com/allanaraya) © 2026
+MIT — [Allan Araya Reyes](https://github.com/allanreyesara) © 2026
